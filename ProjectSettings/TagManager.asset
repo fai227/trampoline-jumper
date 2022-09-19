@@ -3,7 +3,13 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Trampoline
+  - Rock
+  - Lava
+  - Coin
+  - Heal
+  - Effect
   layers:
   - Default
   - TransparentFX
