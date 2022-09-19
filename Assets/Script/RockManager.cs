@@ -32,15 +32,16 @@ public class RockManager : MonoBehaviour
 
             rockObject.transform.Rotate(0f, 0f, Random.Range(0f, 360f));
 
-            yield return new WaitForSeconds(Random.Range(0.2f, 0.4f));
+            yield return new WaitForSeconds(Random.Range(0.4f, 0.8f));
         }
     }
 
     private IEnumerator CeilCoroutine()
     {
+        yield return new WaitForSeconds(2f);
         while (true)
         {
-            Vector2 pos = new Vector2(GameManager.Instance.playerObject.transform.position.x + Random.Range(0f, 10f), 7f);
+            Vector2 pos = new Vector2(GameManager.Instance.playerObject.transform.position.x + Random.Range(0f, 20f), 7f);
             
             //ƒ‰ƒ“ƒ_ƒ€‚Å‘Io
             if (Random.Range(0, 2) == 0) //1/2‚ÅÎ

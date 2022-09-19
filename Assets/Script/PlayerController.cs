@@ -11,6 +11,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private AudioClip coinClip;
     [SerializeField] private AudioClip healClip;
 
+    private bool isDead;
+
     private void Start()
     {
         mainCamera = Camera.main;
@@ -32,6 +34,12 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        //Ž€‚ñ‚Å‚é‚Æ‚«‚Í‰½‚à‚µ‚È‚¢
+        if (isDead)
+        {
+            return;
+        }
+
         if(collision.transform.CompareTag("Lava") || collision.transform.CompareTag("Rock"))
         {
             if (collision.transform.CompareTag("Lava"))
@@ -44,6 +52,7 @@ public class PlayerController : MonoBehaviour
             if(GameManager.Instance.gameStatus == GameManager.GameStatus.Game)
             {
                 GameManager.Instance.EndGame();
+                isDead = true;
             }
             else
             {
@@ -78,9 +87,8 @@ public class PlayerController : MonoBehaviour
         }
         else if (collision.transform.CompareTag("Coin"))
         {
-            GameManager.Instance.SetScore(coin: true);
             Destroy(collision.transform.gameObject);
-
+            GameManager.Instance.GetCoin();
             SoundManager.PlayOneShot(coinClip);
         }
         else if (collision.transform.CompareTag("Heal"))

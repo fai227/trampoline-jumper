@@ -19,8 +19,7 @@ public class GameManager : MonoBehaviour
     private float previosPosition;
 
     [Header("Score")]
-    public int distance;
-    public int coin;
+    public float score;
 
     public enum GameStatus
     {
@@ -34,6 +33,12 @@ public class GameManager : MonoBehaviour
     {
         //音量設定
         InitializeAudio();
+
+        //プレイヤーの名前設定
+        if (PlayerPrefs.HasKey("PlayerName"))
+        {
+            playerNameInputField.text = PlayerPrefs.GetString("PlayerName");
+        }
 
         //パネルを移動
         SetGamePanels(GameStatus.Title);
@@ -97,6 +102,12 @@ public class GameManager : MonoBehaviour
     private GameObject partObject;
     private void GenerateTrampoline()
     {
+        //残量がないときは実行できない
+        if(trampolinePoint <= 0)
+        {
+            return;
+        }
+
         //トランポリン生成開始（パーツ生成）
         if (Input.GetMouseButtonDown(0))
         {
@@ -170,7 +181,7 @@ public class GameManager : MonoBehaviour
         for(int i = 0; i < trampolinePointImages.Length; i++)
         {
             Color originalColor = trampolinePointImages[i].color;
-            originalColor.a = i > trampolinePoint ? 0f : 1f;
+            originalColor.a = i >= trampolinePoint ? 0f : 1f;
             trampolinePointImages[i].color = originalColor;
         }
     }
@@ -257,7 +268,7 @@ public class GameManager : MonoBehaviour
         }
 
         //置ける場所を探してヒールを置く
-        Vector2 healPos = new Vector2(posX, Random.Range(-2.5f, -3.5f));
+        Vector2 healPos = new Vector2(posX, Random.Range(-1.5f, -3.5f));
         while (true)
         {
             Collider2D[] hitColliders = Physics2D.OverlapBoxAll(healPos, healPrefab.transform.localScale, 0f);
@@ -310,8 +321,8 @@ public class GameManager : MonoBehaviour
     #region Score
     [Header("Score")]
     [SerializeField] private Text distanceText;
-    [SerializeField] private Text coinText;
-    public void SetScore(float distance = -1f, bool coin = false)
+    private int coinCount;
+    public void SetScore(float distance)
     {
         //ゲーム中でないときは早期リターン
         if (gameStatus != GameStatus.Game)
@@ -319,20 +330,22 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        //スコア反映
-        if (distance != -1f)
-        {
-            this.distance = (int)distance;
-        }
-        if (coin)
-        {
-            this.coin++;
-        }
+        //スコア計算
+        score = distance + coinCount * 10f;
 
         //スコア表示
-        distanceText.text = this.distance.ToString("0") + "M";
-        coinText.text = this.coin.ToString();
+        distanceText.text = score.ToString("0") + "M";
 
+    }
+    [SerializeField] private GameObject coinTextPrefab;
+    private static float coinDuration = 1f;
+    public void GetCoin()
+    {
+        coinCount++;
+        GameObject coinText = Instantiate(coinTextPrefab, GameObject.Find("GamePanel").transform);
+        coinText.transform.localPosition = new Vector2(350f, 150f);
+        coinText.transform.DOLocalMoveY(200f, coinDuration);
+        coinText.GetComponent<Text>().DOFade(0f, coinDuration);
     }
     #endregion
 
@@ -409,8 +422,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Text secondText;
     [SerializeField] private Text thirdText;
     [SerializeField] private Text laterText;
+    [SerializeField] private Text nowText;
     private void ShowRanking()
     {
+        //現在のスコア反映
+        nowText.text = "Score:" + score.ToString("0000") + "M";
+
         //ランキング取得
         int[] distances = new int[11];
         string[] players = new string[11];
@@ -419,8 +436,9 @@ public class GameManager : MonoBehaviour
             distances[i] = PlayerPrefs.GetInt("Rank" + i.ToString(), 0);
             players[i] = PlayerPrefs.GetString("Player" + i.ToString(), "");
         }
-        distances[10] = distance;
+        distances[10] = (int)score;
         players[10] = playerName;
+        PlayerPrefs.SetString("PlayerName", playerName);
 
         //ランキング計算
         for(int i = 0; i < 11; i++)
@@ -494,5 +512,10 @@ public class GameManager : MonoBehaviour
         {
             SceneManager.LoadScene("Game");
         });
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
 }
