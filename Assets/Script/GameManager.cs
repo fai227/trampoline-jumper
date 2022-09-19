@@ -436,7 +436,7 @@ public class GameManager : MonoBehaviour
             distances[i] = PlayerPrefs.GetInt("Rank" + i.ToString(), 0);
             players[i] = PlayerPrefs.GetString("Player" + i.ToString(), "");
         }
-        distances[10] = (int)score;
+        distances[10] = (int)Mathf.Round(score);
         players[10] = playerName;
         PlayerPrefs.SetString("PlayerName", playerName);
 
@@ -481,7 +481,7 @@ public class GameManager : MonoBehaviour
         }
 
         string result = "";
-        for (int i = 3; i < 1; i++)
+        for (int i = 3; i < 11; i++)
         {
             if (players[i] == "")
             {
