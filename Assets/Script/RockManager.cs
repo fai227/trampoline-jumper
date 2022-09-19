@@ -48,7 +48,7 @@ public class RockManager : MonoBehaviour
             {
                 GameObject fallItem = Instantiate(rockPrefabs[Random.Range(0, rockPrefabs.Length)]);
                 fallItem.transform.position = pos;
-                float rScale = Random.Range(0.25f, 0.75f);
+                float rScale = Random.Range(0.15f, 0.5f);
                 fallItem.transform.localScale = new Vector3(rScale, rScale, rScale);
                 fallItem.transform.Rotate(new Vector3(0f, 0f, Random.Range(0f, 360f)));
             }
